@@ -8,6 +8,7 @@
       self.nixosModules.desktop
       self.nixosModules.pi-agent
       self.nixosModules.neovim
+      self.nixosModules.keyboard
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -45,16 +46,6 @@
     LC_PAPER = "en_US.UTF-8";
     LC_TELEPHONE = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
-  };
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "colemak";
-  };
-
-  console = {
-    keyMap = "colemak";
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
