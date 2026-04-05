@@ -64,7 +64,7 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     git
-  #  wget
+    fastfetch
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
