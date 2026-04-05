@@ -6,6 +6,7 @@
       self.nixosModules.t470Hardware
       self.nixosModules.myNiri
       self.nixosModules.desktop
+      self.nixosModules.pi-agent
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];

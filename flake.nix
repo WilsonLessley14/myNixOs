@@ -7,6 +7,8 @@
     import-tree.url = "github:vic/import-tree";
 
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
+
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   # import ./modules automatically
