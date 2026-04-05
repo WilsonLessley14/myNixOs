@@ -37,7 +37,7 @@
 	 "Mod+S".spawn-sh =
 	   "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
 	 "Mod+Return".spawn-sh = lib.getExe pkgs.ghostty;
-	 "Mod+Q".close-window = _: {};
+	 "Ctrl+Q".close-window = _: {};
 
 	 "Ctrl+L".focus-column-right-or-first = _: {};
 	 "Ctrl+H".focus-column-left-or-last = _: {};
