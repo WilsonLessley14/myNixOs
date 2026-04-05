@@ -31,6 +31,12 @@
 	    width = 1.5;
 
 	  };
+	  
+	};
+
+	window-rule = {
+          geometry-corner-radius = 12;
+	  clip-to-geometry = true;
 	};
 
 	binds = {
