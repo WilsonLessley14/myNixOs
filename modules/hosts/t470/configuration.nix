@@ -9,6 +9,7 @@
       self.nixosModules.pi-agent
       self.nixosModules.neovim
       self.nixosModules.keyboard
+      self.nixosModules.ghostty
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
