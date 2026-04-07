@@ -31,7 +31,7 @@
 	    width = 1.5;
 
 	  };
-	  
+
 	};
 
 	window-rule = {
@@ -43,6 +43,7 @@
 	 "Mod+S".spawn-sh =
 	   "${lib.getExe self'.packages.myNoctalia} ipc call launcher toggle";
 	 "Mod+Return".spawn-sh = lib.getExe pkgs.ghostty;
+	 "Mod+B".spawn-sh = lib.getExe pkgs.brave;
 	 "Ctrl+Q".close-window = _: {};
 
 	 "Ctrl+L".focus-column-right-or-first = _: {};
@@ -57,6 +58,16 @@
 
          "Ctrl+D".toggle-window-floating = _: {};
 	 "Ctrl+T".switch-focus-between-floating-and-tiling = _: {};
+
+	 "Ctrl+Left".spawn-sh = "niri msg action move-floating-window -x -5";
+	 "Ctrl+Right".spawn-sh = "niri msg action move-floating-window -x +5";
+	 "Ctrl+Up".spawn-sh = "niri msg action move-floating-window -y -5";
+	 "Ctrl+Down".spawn-sh = "niri msg action move-floating-window -y +5";
+
+	 "Ctrl+Alt+Left".set-window-width = "-5%";
+	 "Ctrl+Alt+Right".set-window-width = "+5%";
+	 "Ctrl+Alt+Up".set-window-height = "+5%";
+	 "Ctrl+Alt+Down".set-window-height = "-5%";
         };
       };
     };
