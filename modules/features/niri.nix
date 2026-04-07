@@ -37,6 +37,9 @@
 	window-rule = {
           geometry-corner-radius = 12;
 	  clip-to-geometry = true;
+	  
+	  opacity = 1.0;
+	  draw-border-with-background = false;
 	};
 
 	binds = {

@@ -259,7 +259,7 @@
       "settingsPanelSideBarCardStyle": false
     },
     "location": {
-      "name": "Tokyo",
+      "name": "New Haven",
       "weatherEnabled": true,
       "weatherShowEffects": true,
       "useFahrenheit": false,
@@ -301,7 +301,7 @@
       ],
       "enableMultiMonitorDirectories": false,
       "showHiddenFiles": false,
-      "viewMode": "single",
+      "viewMode": "browse",
       "setWallpaperOnAllMonitors": true,
       "fillMode": "crop",
       "fillColor": "#000000",
@@ -625,8 +625,7 @@
       "backlightDeviceMappings": []
     },
     "colorSchemes": {
-      "useWallpaperColors": false,
-      "predefinedScheme": "Rose Pine",
+      "useWallpaperColors": true,
       "darkMode": true,
       "schedulingMode": "off",
       "manualSunrise": "06:30",
@@ -635,7 +634,12 @@
       "monitorForColors": ""
     },
     "templates": {
-      "activeTemplates": [],
+      "activeTemplates": [
+        {
+          "enabled": true,
+          "id": "ghostty"
+        }
+      ],
       "enableUserTheming": false
     },
     "nightLight": {
@@ -691,23 +695,25 @@
     "barVisible": true,
     "openedPanel": "",
     "lockScreenActive": false,
-    "wallpapers": {},
+    "wallpapers": {
+      "eDP-1": "/home/wilson/Pictures/Wallpapers/howls-1.png"
+    },
     "desktopWidgetsEditMode": false,
     "display": {
-      "winit": {
-        "name": "winit",
+      "eDP-1": {
+        "name": "eDP-1",
         "connected": true,
-        "scale": 1,
-        "width": 1280,
-        "height": 800,
+        "scale": 1.5,
+        "width": 1706,
+        "height": 960,
         "x": 0,
         "y": 0,
-        "physical_width": 0,
-        "physical_height": 0,
-        "refresh_rate": 60000,
+        "physical_width": 310,
+        "physical_height": 170,
+        "refresh_rate": 60004,
         "vrr_supported": false,
         "vrr_enabled": false,
-        "transform": "Flipped180"
+        "transform": "Normal"
       }
     },
     "notificationsState": {
