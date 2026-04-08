@@ -2,7 +2,7 @@
   flake.nixosModules.t470Configuration = { pkgs, config, lib, ... }: {
 
   imports =
-    [ # Include the results of the hardware scan.
+    [ 
       self.nixosModules.t470Hardware
       self.nixosModules.myNiri
       self.nixosModules.desktop
@@ -10,6 +10,7 @@
       self.nixosModules.neovim
       self.nixosModules.keyboard
       self.nixosModules.ghostty
+      inputs.nvf.nixosModules.default # import module that provides nvf options
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
