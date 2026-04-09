@@ -4,14 +4,14 @@
       xkb = {
         layout = "us";
         variant = "colemak";
+        options = "caps:ctrl_modifier";
       };
-      xkbOptions = "caps:ctrl_modifier";
     };
 
     environment.variables = with config.services.xserver; {
       XKB_DEFAULT_LAYOUT = xkb.layout;
       XKB_DEFAULT_VARIANT = xkb.variant;
-      XKB_DEFAULT_OPTIONS = xkbOptions;
+      XKB_DEFAULT_OPTIONS = xkb.options;
     };
 
     console.useXkbConfig = true;
