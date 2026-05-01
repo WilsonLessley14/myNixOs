@@ -22,7 +22,6 @@
 
       layout = {
         gaps = 5;
-
         focus-ring = {
           width = 1.5;
         };
@@ -35,6 +34,12 @@
         opacity = 1.0;
         draw-border-with-background = false;
       };
+
+        outputs = {
+          "DP-4" = {
+            transform = "90";
+          };
+        };
 
       binds = {
        "Mod+S".spawn-sh =
@@ -50,8 +55,7 @@
 
        "Ctrl+Shift+L".move-column-right = _: {};
        "Ctrl+Shift+H".move-column-left = _: {};
-       "Ctrl+Shift+K".move-workspace-up = _: {};
-       "Ctrl+Shift+J".move-workspace-down = _: {};
+       "Ctrl+Shift+K".move-column-to-workspace-up = _: {};
 
        "Ctrl+D".toggle-window-floating = _: {};
        "Ctrl+T".switch-focus-between-floating-and-tiling = _: {};
