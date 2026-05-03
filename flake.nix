@@ -11,6 +11,10 @@
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     nvf.url = "github:notashelf/nvf";
+
+    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
   # Import all .nix files from current directory except flake.nix recursively

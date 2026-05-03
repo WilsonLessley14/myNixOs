@@ -1,5 +1,5 @@
-{ self, inputs, ... }: {
-  flake.nixosModules.neovim = { pkgs, ... }: {
+{ self, inputs, config, ... }: let
+  nvfConfig = { pkgs, ... }: {
     environment.systemPackages = with pkgs; [
       neovim
     ];
@@ -66,4 +66,7 @@
     };
   };
 
+in {
+  flake.modules.nixos.neovim = nvfConfig;
+  flake.modules.darwin.neovim = nvfConfig;
 }
