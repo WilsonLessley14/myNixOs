@@ -12,14 +12,11 @@
 
     nvf.url = "github:notashelf/nvf";
 
-<<<<<<< HEAD
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
 
-=======
     # rlc is a leet code practice tool
     rlc.url = "github:WilsonLessley14/Rust-Leet-Code";
->>>>>>> 93f0f13 (whoops: grab bag of nixos changes)
   };
 
   # Import all .nix files from current directory except flake.nix recursively
