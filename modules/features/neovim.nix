@@ -67,6 +67,6 @@
   };
 
 in {
-  flake.modules.nixos.neovim = nvfConfig;
+  flake.nixosModules.neovim = nvfConfig;
   flake.modules.darwin.neovim = nvfConfig;
 }
