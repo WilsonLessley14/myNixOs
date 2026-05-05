@@ -36,9 +36,21 @@
       };
 
         outputs = {
-          "DP-4" = {
+          "HDMI-A-2" = {
             transform = "90";
+            position = _: {
+              props = { x = 2560; y = -240; };
+            };
           };
+
+          "DP-4" = {
+            position = _: {
+              props = { x = 0; y = 0; };
+            };
+            focus-at-startup = _: {};
+          };
+
+          
         };
 
       binds = {
