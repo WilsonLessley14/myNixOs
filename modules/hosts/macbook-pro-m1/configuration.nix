@@ -1,9 +1,10 @@
 { self, inputs, config, ... }: {
   flake.modules.darwin.macbookProM1Configuration = { pkgs, ... }: {
-    environment.systemPackages =
-      [ 
-        pkgs.neovim
-      ];
+    imports = [
+      self.modules.darwin.ghostty
+      self.modules.darwin.neovim
+      inputs.nvf.darwinModules.default # import module that provides nvf options
+    ];
 
     # Necessary for using flakes on this system.
     nix.settings.experimental-features = "nix-command flakes";
