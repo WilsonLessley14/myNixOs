@@ -8,6 +8,7 @@ flake.nixosModules.p330Configuration = { config, pkgs, ... }:
       self.nixosModules.neovim
       self.nixosModules.keyboard
       inputs.nvf.nixosModules.default
+      self.nixosModules.jellyfin
     ];
   
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
