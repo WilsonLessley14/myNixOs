@@ -17,29 +17,28 @@ flake.nixosModules.p330Configuration = { config, pkgs, ... }:
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.hostName = "wilsons-thinkstation"; # Define your hostname.
 
   networking = {
-    interfaces.enp3s0 = {
-      ipv4.addresses = [{
-	address = "10.42.0.2";
-	prefixLength = 24;
-      }];
-    };
+
+    interfaces.wlp3s0.ipv4.addresses = [{
+      address = "10.67.77.253";
+      prefixLength = 20;
+    }];
     defaultGateway = {
-      address = "10.42.0.1";
-      interface = "enp3s0";
+      address = "10.67.64.1";
+      interface = "wlp3s0";
     };
     nameservers = [ "8.8.8.8" ];
   };
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
   # Enable networking
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+      enable = true;
+      wifi.macAddress = "permanent";
+  };
+
+
 
   # Set your time zone.
   time.timeZone = "America/New_York";
