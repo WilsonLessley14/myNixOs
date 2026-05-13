@@ -6,6 +6,7 @@ flake.nixosModules.p330Configuration = { config, pkgs, ... }:
     [ # Include the results of the hardware scan.
       self.nixosModules.p330Hardware
       self.nixosModules.neovim
+      self.nixosModules.ghostty
       self.nixosModules.keyboard
       inputs.nvf.nixosModules.default
       self.nixosModules.jellyfin
@@ -39,6 +40,16 @@ flake.nixosModules.p330Configuration = { config, pkgs, ... }:
   };
 
 
+  networking.wireguard.interfaces.wg0 = {
+    ips = [ "10.0.0.2/24" ];
+    privateKeyFile = "/etc/wireguard/private.key";
+    peers = [{
+      publicKey = "S+dcbRQ/SkOReoF5BZGMYvlp2MdJjw91tKucsghRWQk=";
+      allowedIPs = [ "10.0.0.0/24" ];
+      endpoint = "5.78.214.60:51820";
+      persistentKeepalive = 25;
+    }];
+  };
 
   # Set your time zone.
   time.timeZone = "America/New_York";
