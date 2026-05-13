@@ -79,6 +79,12 @@ flake.nixosModules.p330Configuration = { config, pkgs, ... }:
     description = "wilson";
     extraGroups = [ "networkmanager" "wheel" "video" "input" ];
     packages = with pkgs; [];
+    openssh.authorizedKeys.keys = [
+      #m1 mac
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIeLEdYfYIu54pjyFta39azix0QHg3YgzsYiVJDf+fug wilsonlessley14@gmail.com"
+      #t470
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILImCZrZJXzU3RkmuUNaq4Jo2nTE2oj0lfL8dAItP6aE wilsonlessley14@gmail.com"
+    ];
   };
 
   # Allow unfree packages
@@ -104,7 +110,14 @@ flake.nixosModules.p330Configuration = { config, pkgs, ... }:
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+      KbdInteractiveAuthentication = false;
+    };
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
