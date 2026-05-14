@@ -40,17 +40,16 @@
         wifi.macAddress = "permanent";
       };
 
-      wireguard.interfaces.wg0 = {
-        ips = [ "10.0.0.2/24" ];
+      wireguard.interfaces.wg1 = {
+        ips = [ "10.0.1.2/24" ];
         privateKeyFile = "/etc/wireguard/private.key";
         peers = [{
-          publicKey = "S+dcbRQ/SkOReoF5BZGMYvlp2MdJjw91tKucsghRWQk=";
-          allowedIPs = [ "10.0.0.0/24" ];
-          endpoint = "5.78.214.60:51820";
+          publicKey = "37xR0foIbAyLGna9/dfpvWIpJxQ5wno3RhQj9ZkjAEM=";
+          allowedIPs = [ "10.0.1.0/24" ];
+          endpoint = "5.78.208.9:51821";
           persistentKeepalive = 25;
         }];
       };
-
     };
 
     # Set your time zone.
