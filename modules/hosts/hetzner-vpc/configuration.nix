@@ -26,16 +26,18 @@
       ];
     };
 
-    networking.wireguard.interfaces.wg0 = {
-      ips = [ "10.0.0.1/24" ];
-      listenPort = 51820;
+    networking.wireguard.interfaces.wg1 = {
+      ips = [ "10.0.1.1/24" ];
+      listenPort = 51821;
       privateKeyFile = "/etc/wireguard/private.key";
       peers = [{
         publicKey = "urVgKnvbWGnyrAihi2IROiK88BX/4YG2vFIGXGa1WSc=";
-        allowedIPs = [ "10.0.0.2/32" ];
+        allowedIPs = [ "10.0.1.2/32" ];
       }];
-      firewall.allowedUDPPorts = [ 51820 ];
-      hostName = "ubuntu-2gb-hil-1";
+    };
+    networking = {
+      firewall.allowedUDPPorts = [ 51821 ];
+      hostName = "vps-1";
       domain = "";
     };
 
