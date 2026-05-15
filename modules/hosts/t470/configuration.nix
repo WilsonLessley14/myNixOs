@@ -93,6 +93,18 @@
       };
     };
 
+    programs.ssh = {
+      extraConfig = ''
+        Host vps
+          HostName 5.78.208.9
+          User wilson
+
+        Host thinkstation
+          HostName 10.0.1.2
+          user wilson
+          ProxyJump vps
+      '';
+    };
 
     system.stateVersion = "25.11"; # Did you read the comment?
   };
