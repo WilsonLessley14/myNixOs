@@ -4,6 +4,7 @@
       self.nixosModules.vpcHardware
       self.nixosModules.ghostty
       self.nixosModules.neovim
+      self.nixosModules.nginx
       inputs.nvf.nixosModules.default
     ];
 
@@ -36,7 +37,10 @@
       }];
     };
     networking = {
-      firewall.allowedUDPPorts = [ 51821 ];
+      firewall = {
+        allowedUDPPorts = [ 51821 ];
+        allowedTCPPorts = [ 80 ];
+      };
       hostName = "vps-1";
       domain = "";
     };
