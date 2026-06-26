@@ -20,12 +20,30 @@
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
 
-    networking.hostName = "nixos"; # Define your hostname.
+    networking = {
+      hostName = "nixos"; # Define your hostname.
 
-    # Enable networking
-    networking.networkmanager = {
-      enable = true;
-      wifi.macAddress = "54:e1:ad:9f:d7:54";
+      # Enable networking
+      networkmanager = {
+        enable = true;
+        wifi.macAddress = "54:e1:ad:9f:d7:54";
+      };
+
+      firewall.allowedUDPPorts = [ 51822 ];
+
+      wireguard.interfaces.wg1 = {
+        ips = [ "10.0.1.3/32" ];
+        privateKeyFile = "/etc/wireguard/private.key";
+        listenPort = 51822;
+        peers = [
+          {
+            # remote settings for hetzner vps, the VPN "hub"
+            publicKey = "37xR0foIbAyLGna9/dfpvWIpJxQ5wno3RhQj9ZkjAEM=";
+            allowedIPs = [ "10.0.1.0/24" ];
+            endpoint = "5.78.208.9:51821";
+          }
+        ];
+      };
     };
 
     # Set your time zone.
