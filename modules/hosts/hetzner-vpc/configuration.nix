@@ -31,10 +31,23 @@
       ips = [ "10.0.1.1/24" ];
       listenPort = 51821;
       privateKeyFile = "/etc/wireguard/private.key";
-      peers = [{
-        publicKey = "urVgKnvbWGnyrAihi2IROiK88BX/4YG2vFIGXGa1WSc=";
-        allowedIPs = [ "10.0.1.2/32" ];
-      }];
+      peers = [
+        # remote settings for p330 server
+        {
+          publicKey = "urVgKnvbWGnyrAihi2IROiK88BX/4YG2vFIGXGa1WSc=";
+          allowedIPs = [ "10.0.1.2/32" ];
+        } 
+        # remote settings for t470s thinkpad laptop
+        {
+          publicKey = "Kn/x/X0V3vPfffRSmsGEHvRmDSWTeJVhnEhvubKFiR0=";
+          allowedIPs = [ "10.0.1.3/32" ];
+        }
+        # remote settings for iPhone (4) (my personal iPhone)
+        {
+          publicKey = "k7xeyZQqv8/4/kSUjkTdvSdbK+BVWQ8FnzH3jUBan2s=";
+          allowedIPs = [ "10.0.1.4/32" ];
+        }
+      ];
     };
     networking = {
       firewall = {
@@ -44,6 +57,9 @@
       hostName = "vps-1";
       domain = "";
     };
+
+    # enable ip forwarding
+    boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
     # Workaround for https://github.com/NixOS/nix/issues/8502
     services.logrotate.checkConfig = false;
