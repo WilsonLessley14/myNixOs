@@ -40,15 +40,21 @@
         wifi.macAddress = "permanent";
       };
 
+      firewall.allowedUDPPorts = [ 51823 ];
+
       wireguard.interfaces.wg1 = {
         ips = [ "10.0.1.2/24" ];
         privateKeyFile = "/etc/wireguard/private.key";
-        peers = [{
-          publicKey = "37xR0foIbAyLGna9/dfpvWIpJxQ5wno3RhQj9ZkjAEM=";
-          allowedIPs = [ "10.0.1.0/24" ];
-          endpoint = "5.78.208.9:51821";
-          persistentKeepalive = 25;
-        }];
+        listenPort = 51823;
+        peers = [
+          # remote settings for hetzner vps, the "hub"
+          {
+            publicKey = "37xR0foIbAyLGna9/dfpvWIpJxQ5wno3RhQj9ZkjAEM=";
+            allowedIPs = [ "10.0.1.0/24" ];
+            endpoint = "5.78.208.9:51821";
+            persistentKeepalive = 25;
+          }
+        ];
       };
     };
 
