@@ -58,6 +58,13 @@
       };
     };
 
+    # permanently mount extra hdd
+    fileSystems."/mnt/storage" = {
+      device = "/dev/disk/by-uuid/893553d9-cc44-4e31-af3b-8f84088473b7";
+      fsType = "ext4";
+      options = [ "defaults" "nofail" ];
+    };
+
     # Set your time zone.
     time.timeZone = "America/New_York";
 
