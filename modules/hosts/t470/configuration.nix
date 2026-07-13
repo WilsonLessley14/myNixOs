@@ -6,7 +6,7 @@
         self.nixosModules.t470Hardware
         self.nixosModules.myNiri
         self.nixosModules.desktop
-        self.nixosModules.pi-agent
+        self.nixosModules.agent-harness
         self.nixosModules.neovim
         self.nixosModules.keyboard
         self.nixosModules.ghostty
