@@ -11,6 +11,7 @@
         self.nixosModules.keyboard
         self.nixosModules.ghostty
         self.nixosModules.rlc
+        self.nixosModules.obs
         inputs.nvf.nixosModules.default # import module that provides nvf options
       ];
 
