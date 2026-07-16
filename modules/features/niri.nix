@@ -58,9 +58,7 @@
           "Ctrl+Shift+L".move-column-right = _: {};
           "Ctrl+Shift+H".move-column-left = _: {};
           "Ctrl+Shift+K".move-column-to-workspace-up = _: {};
-
-          "Ctrl+D".toggle-window-floating = _: {};
-          "Ctrl+T".switch-focus-between-floating-and-tiling = _: {};
+          "Ctrl+Shift+J".move-column-to-workspace-down = _: {};
 
           "Ctrl+Left".spawn-sh = "niri msg action move-floating-window -x -5";
           "Ctrl+Right".spawn-sh = "niri msg action move-floating-window -x +5";
