@@ -46,6 +46,9 @@
       };
     };
 
+    # enable bolt, so thunderbolt can connect to usb hub
+    services.hardware.bolt.enable = true;
+
     # Set your time zone.
     time.timeZone = "America/New_York";
 
@@ -97,6 +100,15 @@
             AutoEnable = true;
           };
         };
+      };
+    };
+
+    # battery conservation settings
+    services.tlp = {
+      enable = true;
+      settings = {
+        START_CHARGE_THRESHOLD_BAT0 = 75;
+        STOP_CHARGE_THRESHOLD_BAT0 = 80;
       };
     };
 
