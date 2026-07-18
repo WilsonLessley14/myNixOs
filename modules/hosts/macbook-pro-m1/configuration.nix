@@ -10,6 +10,7 @@
     agentHarness = {
       modelPath = "/Users/wlessley/Library/Application Support/llama-cpp/model.gguf";
       modelUrl = "https://huggingface.co/unsloth/gemma-4-31B-it-GGUF/resolve/main/gemma-4-31B-it-Q8_0.gguf";
+      contextSplit.enable = true;
     };
 
     # Necessary for using flakes on this system.
