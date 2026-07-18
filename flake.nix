@@ -10,6 +10,8 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    pi-orchestrator.url = "path:/Users/wlessley/Projects/tools/pi-orchestrator";
+
     nvf.url = "github:notashelf/nvf";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
