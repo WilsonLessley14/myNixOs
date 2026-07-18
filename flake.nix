@@ -10,7 +10,7 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    pi-orchestrator.url = "path:/Users/wlessley/Projects/tools/pi-orchestrator";
+    pi-orchestrator.url = "git+ssh://git@github.com/WilsonLessley14/pi-orchestrator.git";
 
     nvf.url = "github:notashelf/nvf";
 
