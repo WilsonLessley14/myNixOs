@@ -112,14 +112,44 @@ let
   # real model memory use `footprint <pid>` / `memory_pressure`).
   llamaDashboardDir = ../features/llama-dashboard;
 
+  # Tools the orchestrator pi session is allowed to have. Deliberately EXCLUDES
+  # write/edit: with local models, "the skill says don't implement" is not a
+  # reliable constraint — the orchestrator was observed forgoing the builder and
+  # editing code directly. Removing the authoring tools by construction makes
+  # implementing impossible; the model must route work through builder_*.
+  #   - read/grep/find/ls: inspect the spec and code (grep/find/ls are off by
+  #     default in pi, so they must be named explicitly in an allowlist).
+  #   - bash: run each checkpoint's validation commands (non-negotiable).
+  #   - spec_load + builder_*: the orchestrator's control surface (extension
+  #     tools; --tools applies to extension tools too, so they must be listed).
+  # (bash could still `cat > file`; the skill covers that intent. This removes
+  # the obvious write/edit path, which is the structural win.)
+  orchestratorTools = lib.concatStringsSep "," [
+    "read" "grep" "find" "ls" "bash"
+    "spec_load" "builder_run" "builder_message" "builder_status" "builder_kill"
+  ];
+
   darwinModule = { config, pkgs, lib, ... }: let
     cfg = config.agentHarness;
     llamaServerBin = "${pkgs.llama-cpp}/bin/llama-server";
+    piBin = "${inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi}/bin/pi";
     piModelsFile = pkgs.writeText "pi-models.json" (mkPiModelsJson {
       # With --kv-unified set (see launchd args), each slot gets the full
       # ctxSize from a shared buffer, so ctxSize is the real per-agent window.
       contextWindow = if cfg.contextSplit.enable then cfg.contextSplit.ctxSize else null;
     });
+    # `pi-implement [SPEC]` — launch the orchestrator session with exactly the
+    # allowed tool set and immediately run /implement on the given spec
+    # (default SPEC.md). This is the single controlled entry point for the
+    # orchestrator flow so the tool flags can't drift.
+    piImplement = pkgs.writeShellScriptBin "pi-implement" ''
+      spec="''${1:-SPEC.md}"
+      if [ ! -f "$spec" ]; then
+        echo "pi-implement: no spec file at '$spec' (pass a path, or run from a dir with SPEC.md)" >&2
+        exit 1
+      fi
+      exec ${piBin} --tools ${orchestratorTools} "/implement $spec"
+    '';
     llamaCtl = pkgs.writeShellScriptBin "llamactl" ''
       MODEL_PATH="${cfg.modelPath}"
       MODEL_URL="${if cfg.modelUrl != null then cfg.modelUrl else ""}"
@@ -224,7 +254,7 @@ let
       environment.systemPackages = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
         pi
         claude-code
-      ] ++ [ pkgs.llama-cpp llamaCtl ];
+      ] ++ [ pkgs.llama-cpp llamaCtl piImplement ];
 
       # User LaunchAgent for llama-server (Metal GPU offload via -ngl).
       # contextSplit.enable adds --parallel 2 + --ctx-size; see option doc above.
