@@ -1,17 +1,22 @@
 { self, inputs, lib, ... }:
 
 let
-  # Shared pi models.json pointing at local llama-server OpenAI-compatible endpoint
-  piModelsJson = builtins.toJSON {
-    providers = {
-      llama-cpp = {
-        baseUrl = "http://localhost:8080/v1";
-        api = "openai-completions";
-        apiKey = "none";
-        models = [ { id = "local"; } ];
+  # pi models.json for local llama-server. Single provider/port always;
+  # see contextSplit below.
+  mkPiModelsJson = { contextWindow }:
+    let
+      model = { id = "local"; } // lib.optionalAttrs (contextWindow != null) { inherit contextWindow; };
+    in
+    builtins.toJSON {
+      providers = {
+        llama-cpp = {
+          baseUrl = "http://localhost:8080/v1";
+          api = "openai-completions";
+          apiKey = "none";
+          models = [ model ];
+        };
       };
     };
-  };
 
   nixosModule = { config, pkgs, lib, ... }: let
     cfg = config.agentHarness;
@@ -58,6 +63,8 @@ let
       esac
     '';
   in {
+    imports = [ inputs.pi-orchestrator.nixosModules.pi-orchestrator ];
+
     options.agentHarness = {
       modelPath = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
@@ -87,7 +94,7 @@ let
 
       # Write pi models config declaratively for root; users should symlink or copy
       environment.etc."pi-agent/models.json" = {
-        text = piModelsJson;
+        text = mkPiModelsJson { contextWindow = null; };
         mode = "0444";
       };
 
@@ -97,7 +104,10 @@ let
   darwinModule = { config, pkgs, lib, ... }: let
     cfg = config.agentHarness;
     llamaServerBin = "${pkgs.llama-cpp}/bin/llama-server";
-    piModelsFile = pkgs.writeText "pi-models.json" piModelsJson;
+    piModelsFile = pkgs.writeText "pi-models.json" (mkPiModelsJson {
+      # kv_unified default: each slot gets the full ctxSize, not a split.
+      contextWindow = if cfg.contextSplit.enable then cfg.contextSplit.ctxSize else null;
+    });
     llamaCtl = pkgs.writeShellScriptBin "llamactl" ''
       MODEL_PATH="${cfg.modelPath}"
       MODEL_URL="${if cfg.modelUrl != null then cfg.modelUrl else ""}"
@@ -146,6 +156,8 @@ let
       esac
     '';
   in {
+    imports = [ inputs.pi-orchestrator.modules.darwin.pi-orchestrator ];
+
     options.agentHarness = {
       modelPath = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
@@ -157,6 +169,26 @@ let
         default = null;
         description = "URL to download the GGUF model from if modelPath does not exist.";
       };
+
+      # See pi-orchestrator/PLAN.md "Context budget".
+      # One llama-server, one model load (2 loads of a ~30GB model won't fit
+      # in 64GB). --parallel 2, kv_unified default (each slot gets the full
+      # ctxSize, not a split). Slot pinning isn't possible via pi's
+      # OpenAI-compatible API; relies on --slot-prompt-similarity to keep
+      # each agent on its own slot in practice — soft guarantee, worst case
+      # is a reprocessed prompt, not corrupted context.
+      contextSplit = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Run llama-server with --parallel 2 so the pi-orchestrator and its builder child each get a slot.";
+        };
+        ctxSize = lib.mkOption {
+          type = lib.types.int;
+          default = 64000;
+          description = "--ctx-size per slot (kv_unified default = full amount per slot, not split).";
+        };
+      };
     };
 
     config = {
@@ -165,7 +197,8 @@ let
         claude-code
       ] ++ [ pkgs.llama-cpp llamaCtl ];
 
-      # User LaunchAgent for llama-server (Metal GPU offload via -ngl)
+      # User LaunchAgent for llama-server (Metal GPU offload via -ngl).
+      # contextSplit.enable adds --parallel 2 + --ctx-size; see option doc above.
       launchd.user.agents.llama-server = lib.mkIf (cfg.modelPath != null) {
         serviceConfig = {
           Label = "local.llama-server";
@@ -175,6 +208,10 @@ let
             "--host" "127.0.0.1"
             "--port" "8080"
             "--gpu-layers" "99"
+          ] ++ lib.optionals cfg.contextSplit.enable [
+            "--parallel" "2"
+            "--ctx-size" (toString cfg.contextSplit.ctxSize)
+            "--slot-prompt-similarity" "0.10" # pinned explicitly, sticky-slot routing depends on it
           ];
           RunAtLoad = false;
           KeepAlive = false;
