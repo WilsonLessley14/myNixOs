@@ -116,17 +116,20 @@ let
   # write/edit: with local models, "the skill says don't implement" is not a
   # reliable constraint — the orchestrator was observed forgoing the builder and
   # editing code directly. Removing the authoring tools by construction makes
-  # implementing impossible; the model must route work through builder_*.
+  # implementing impossible; the model must route work through the agents.
   #   - read/grep/find/ls: inspect the spec and code (grep/find/ls are off by
   #     default in pi, so they must be named explicitly in an allowlist).
-  #   - bash: run each checkpoint's validation commands (non-negotiable).
-  #   - spec_load + builder_*: the orchestrator's control surface (extension
-  #     tools; --tools applies to extension tools too, so they must be listed).
-  # (bash could still `cat > file`; the skill covers that intent. This removes
-  # the obvious write/edit path, which is the structural win.)
+  #   - bash: READ-ONLY diagnosis only. The extension's bash-guard blocks
+  #     anything that isn't a read-only inspect command (no writes, no runners —
+  #     validation is the reviewer's job, implementing is the builder's).
+  #   - spec_load + builder_* + reviewer_run: the orchestrator's control surface
+  #     (extension tools; --tools applies to extension tools too, so they must
+  #     be listed). reviewer_run is how validation happens now.
   orchestratorTools = lib.concatStringsSep "," [
     "read" "grep" "find" "ls" "bash"
-    "spec_load" "builder_run" "builder_message" "builder_status" "builder_kill"
+    "spec_load"
+    "builder_run" "builder_message" "builder_status" "builder_kill"
+    "reviewer_run"
   ];
 
   darwinModule = { config, pkgs, lib, ... }: let
@@ -244,7 +247,7 @@ let
         };
         ctxSize = lib.mkOption {
           type = lib.types.int;
-          default = 64000;
+          default = 128000;
           description = "Per-slot context window. Paired with explicit --kv-unified so each slot gets this full amount from a shared buffer (not divided across slots).";
         };
       };
