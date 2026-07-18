@@ -39,7 +39,7 @@ agentHarness = {
   modelPath = "/Users/yourname/Library/Application Support/llama-cpp/model.gguf";
 
   # URL to fetch the model from. Used only by `llamactl download`.
-  modelUrl = "https://huggingface.co/unsloth/gemma-4-31B-it-GGUF/resolve/main/gemma-4-31B-it-Q8_0.gguf";
+  modelUrl = "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-Q8_0.gguf";
 };
 ```
 
