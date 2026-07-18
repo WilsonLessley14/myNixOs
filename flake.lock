@@ -361,11 +361,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1784343087,
-        "narHash": "sha256-10sZQs/pcVBkPCMzgRwr9rKNeHf3OyiajnkCQxrNFgg=",
+        "lastModified": 1784377061,
+        "narHash": "sha256-fz9nAmQ3O3dKN2YaQwiajubahmNJ7eUzHlwanYNJMV4=",
         "ref": "refs/heads/main",
-        "rev": "845bfc55397db31548b279baea9c10774126ccee",
-        "revCount": 3,
+        "rev": "9b2152cbd8b905bbd4da3a91d641f268a4723d0b",
+        "revCount": 10,
         "type": "git",
         "url": "ssh://git@github.com/WilsonLessley14/pi-orchestrator.git"
       },
