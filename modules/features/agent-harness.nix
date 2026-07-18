@@ -89,7 +89,10 @@ let
         model = cfg.modelPath;
         host = "127.0.0.1";
         port = 8080;
-        extraFlags = [ "--gpu-layers" "99" ];
+        # --metrics: Prometheus endpoint (off by default). --slots: on by
+        # default, set explicitly. Dashboard static-serving is wired only in
+        # the darwin module (the M1 harness host).
+        extraFlags = [ "--gpu-layers" "99" "--metrics" "--slots" ];
       };
 
       # Write pi models config declaratively for root; users should symlink or copy
@@ -101,11 +104,20 @@ let
     };
   };
 
+  # The llama.cpp Monitor Dashboard (abhiFSD/llama.cpp-Monitor-Dashboard): a
+  # single static HTML file, zero deps, all client-side. It polls /metrics and
+  # /slots. We serve it from llama-server's own static-file server (--path),
+  # reachable at http://localhost:8080/monitor.html. No Python sidecar (that
+  # only surfaces the same OS-level memory numbers Activity Monitor shows; for
+  # real model memory use `footprint <pid>` / `memory_pressure`).
+  llamaDashboardDir = ../features/llama-dashboard;
+
   darwinModule = { config, pkgs, lib, ... }: let
     cfg = config.agentHarness;
     llamaServerBin = "${pkgs.llama-cpp}/bin/llama-server";
     piModelsFile = pkgs.writeText "pi-models.json" (mkPiModelsJson {
-      # kv_unified default: each slot gets the full ctxSize, not a split.
+      # With --kv-unified set (see launchd args), each slot gets the full
+      # ctxSize from a shared buffer, so ctxSize is the real per-agent window.
       contextWindow = if cfg.contextSplit.enable then cfg.contextSplit.ctxSize else null;
     });
     llamaCtl = pkgs.writeShellScriptBin "llamactl" ''
@@ -127,6 +139,20 @@ let
           echo "$response" | ${pkgs.jq}/bin/jq -r '.data[].id' 2>/dev/null \
             && echo "ok: server is up" \
             || echo "ok: server is up (no models listed)"
+          ;;
+        monitor)
+          open http://127.0.0.1:8080/monitor.html
+          ;;
+        mem)
+          pid=$(${pkgs.procps}/bin/pgrep -f llama-server | head -1)
+          if [ -z "$pid" ]; then echo "llama-server not running"; exit 1; fi
+          # footprint reports phys_footprint (dirty+compressed+wired) — the
+          # honest per-process cost, the same number Xcode's gauge uses and a
+          # truer figure than Activity Monitor's blended column.
+          echo "== model process (pid $pid) =="
+          footprint "$pid" 2>/dev/null | grep -iE 'phys_footprint|footprint:' | head -3
+          echo "== system memory pressure =="
+          memory_pressure 2>/dev/null | tail -3
           ;;
         setup-harness)
           mkdir -p "$HOME/.pi/agent"
@@ -150,7 +176,7 @@ let
           ${pkgs.curl}/bin/curl -L --progress-bar -o "$MODEL_PATH" "$MODEL_URL"
           ;;
         *)
-          echo "Usage: llamactl {status|start|stop|restart|logs|errors|ping|setup-harness|download}"
+          echo "Usage: llamactl {status|start|stop|restart|logs|errors|ping|monitor|mem|setup-harness|download}"
           exit 1
           ;;
       esac
@@ -172,8 +198,11 @@ let
 
       # See pi-orchestrator/PLAN.md "Context budget".
       # One llama-server, one model load (2 loads of a ~30GB model won't fit
-      # in 64GB). --parallel 2, kv_unified default (each slot gets the full
-      # ctxSize, not a split). Slot pinning isn't possible via pi's
+      # in 64GB). --parallel 2 with EXPLICIT --kv-unified so each slot gets the
+      # full ctxSize from a shared buffer. (Without --kv-unified, explicit
+      # --parallel disables the unified buffer and --ctx-size is divided across
+      # slots: 64k -> 32k/slot, which surfaced as an "exceeds context size
+      # (32000)" 400 error.) Slot pinning isn't possible via pi's
       # OpenAI-compatible API; relies on --slot-prompt-similarity to keep
       # each agent on its own slot in practice — soft guarantee, worst case
       # is a reprocessed prompt, not corrupted context.
@@ -186,7 +215,7 @@ let
         ctxSize = lib.mkOption {
           type = lib.types.int;
           default = 64000;
-          description = "--ctx-size per slot (kv_unified default = full amount per slot, not split).";
+          description = "Per-slot context window. Paired with explicit --kv-unified so each slot gets this full amount from a shared buffer (not divided across slots).";
         };
       };
     };
@@ -208,9 +237,22 @@ let
             "--host" "127.0.0.1"
             "--port" "8080"
             "--gpu-layers" "99"
+            # Observability: Prometheus /metrics (off by default) + /slots (on
+            # by default, set explicitly), and serve the static monitor.html
+            # dashboard from the built-in file server (-> /monitor.html).
+            "--metrics"
+            "--slots"
+            "--path" "${llamaDashboardDir}"
           ] ++ lib.optionals cfg.contextSplit.enable [
             "--parallel" "2"
             "--ctx-size" (toString cfg.contextSplit.ctxSize)
+            # kv_unified only AUTO-enables when slots are auto; setting
+            # --parallel 2 makes slots explicit, which turns it OFF, and then
+            # --ctx-size becomes the pooled total DIVIDED across slots (64k ->
+            # 32k/slot, the "exceeds context size (32000)" error). Enable it
+            # explicitly so each slot gets the full --ctx-size from one shared
+            # buffer.
+            "--kv-unified"
             "--slot-prompt-similarity" "0.10" # pinned explicitly, sticky-slot routing depends on it
           ];
           RunAtLoad = false;
