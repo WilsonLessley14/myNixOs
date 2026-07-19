@@ -9,7 +9,7 @@
 
     agentHarness = {
       modelPath = "/Users/wlessley/Library/Application Support/llama-cpp/model.gguf";
-      modelUrl = "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-Q8_0.gguf";
+      modelUrl = "https://huggingface.co/unsloth/Qwen3.6-27B-GGUF/resolve/main/Qwen3.6-27B-Q8_0.gguf";
       contextSplit.enable = true;
     };
 
