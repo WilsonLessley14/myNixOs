@@ -10,6 +10,13 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    # updates to this require the flow:
+    # 
+    # # in ~/myNixOs
+    # nix flake update ppi-orchestrator
+    # sudo darwin-rebuild switch --flake .#{host}
+    # # this symlinks the ppi-orchestrator tools to ~/.pi 
+    # pi-orchestrator-setup
     pi-orchestrator.url = "git+ssh://git@github.com/WilsonLessley14/pi-orchestrator.git";
 
     nvf.url = "github:notashelf/nvf";
