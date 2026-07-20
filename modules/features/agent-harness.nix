@@ -104,27 +104,8 @@ let
     };
   };
 
-  # The llama.cpp Monitor Dashboard (abhiFSD/llama.cpp-Monitor-Dashboard): a
-  # single static HTML file, zero deps, all client-side. It polls /metrics and
-  # /slots. We serve it from llama-server's own static-file server (--path),
-  # reachable at http://localhost:8080/monitor.html. No Python sidecar (that
-  # only surfaces the same OS-level memory numbers Activity Monitor shows; for
-  # real model memory use `footprint <pid>` / `memory_pressure`).
   llamaDashboardDir = ../features/llama-dashboard;
 
-  # Tools the orchestrator pi session is allowed to have. Deliberately EXCLUDES
-  # write/edit: with local models, "the skill says don't implement" is not a
-  # reliable constraint — the orchestrator was observed forgoing the builder and
-  # editing code directly. Removing the authoring tools by construction makes
-  # implementing impossible; the model must route work through the agents.
-  #   - read/grep/find/ls: inspect the spec and code (grep/find/ls are off by
-  #     default in pi, so they must be named explicitly in an allowlist).
-  #   - bash: READ-ONLY diagnosis only. The extension's bash-guard blocks
-  #     anything that isn't a read-only inspect command (no writes, no runners —
-  #     validation is the reviewer's job, implementing is the builder's).
-  #   - spec_load + builder_* + reviewer_run: the orchestrator's control surface
-  #     (extension tools; --tools applies to extension tools too, so they must
-  #     be listed). reviewer_run is how validation happens now.
   orchestratorTools = lib.concatStringsSep "," [
     "read" "grep" "find" "ls" "bash"
     "spec_load"
@@ -228,17 +209,6 @@ let
         default = null;
         description = "URL to download the GGUF model from if modelPath does not exist.";
       };
-
-      # See pi-orchestrator/PLAN.md "Context budget".
-      # One llama-server, one model load (2 loads of a ~30GB model won't fit
-      # in 64GB). --parallel 2 with EXPLICIT --kv-unified so each slot gets the
-      # full ctxSize from a shared buffer. (Without --kv-unified, explicit
-      # --parallel disables the unified buffer and --ctx-size is divided across
-      # slots: 64k -> 32k/slot, which surfaced as an "exceeds context size
-      # (32000)" 400 error.) Slot pinning isn't possible via pi's
-      # OpenAI-compatible API; relies on --slot-prompt-similarity to keep
-      # each agent on its own slot in practice — soft guarantee, worst case
-      # is a reprocessed prompt, not corrupted context.
       contextSplit = {
         enable = lib.mkOption {
           type = lib.types.bool;
